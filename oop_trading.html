@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced OOP — Vektor Labs Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b10;
+    --surface: #0d1117;
+    --surface2: #131920;
+    --surface3: #1a2330;
+    --border: #1f2d3d;
+    --border2: #2a3f54;
+    --accent: #00d4ff;
+    --accent2: #0091b5;
+    --green: #00ff88;
+    --red: #ff3d5a;
+    --yellow: #ffd700;
+    --purple: #b48eff;
+    --orange: #ff8c42;
+    --text: #e2eaf4;
+    --text2: #8a9bb0;
+    --text3: #4a5f75;
+    --glow: 0 0 20px rgba(0,212,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    gap: 6px;
+    padding: 20px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-btn:hover {
+    border-color: var(--accent2);
+    color: var(--accent);
+  }
+
+  .nav-btn.active {
+    background: rgba(0,212,255,0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  /* SECTIONS */
+  .section {
+    display: none;
+    padding: 40px 0;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CONCEPT CARD */
+  .concept-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .concept-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .concept-meta h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .concept-meta p {
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-blue { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .tag-green { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+  .tag-purple { background: rgba(180,142,255,0.1); color: var(--purple); border: 1px solid rgba(180,142,255,0.2); }
+  .tag-orange { background: rgba(255,140,66,0.1); color: var(--orange); border: 1px solid rgba(255,140,66,0.2); }
+
+  /* SPLIT LAYOUT */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 700px) {
+    .split { grid-template-columns: 1fr; }
+  }
+
+  /* CODE BLOCK */
+  .code-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .code-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+
+  .code-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    margin-left: 4px;
+  }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* Syntax highlighting */
+  .kw { color: #ff79c6; }      /* keywords: class, def, etc */
+  .cl { color: var(--accent); } /* class names */
+  .fn { color: var(--green); }  /* functions/methods */
+  .st { color: var(--yellow); } /* strings */
+  .cm { color: var(--text3); font-style: italic; } /* comments */
+  .nb { color: var(--orange); } /* numbers, builtins */
+  .dc { color: var(--purple); } /* decorators */
+  .pr { color: #ff9580; }       /* property/self */
+
+  /* VISUAL DIAGRAM */
+  .diagram-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .diagram-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Class diagram */
+  .class-box {
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .class-box:hover { border-color: var(--accent2); }
+
+  .class-name {
+    background: var(--surface3);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .class-abstract .class-name {
+    color: var(--purple);
+    font-style: italic;
+  }
+
+  .class-attrs, .class-methods {
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.8;
+  }
+
+  .class-attrs { border-bottom: 1px solid var(--border); }
+
+  .attr-type { color: var(--text3); }
+  .method-name { color: var(--green); }
+  .method-private { color: var(--text3); }
+
+  /* Arrow */
+  .arrow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .arrow-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border2);
+    position: relative;
+  }
+
+  .arrow-label {
+    white-space: nowrap;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: rgba(0,212,255,0.04);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .info-box strong { color: var(--text); }
+
+  .warn-box {
+    background: rgba(255,215,0,0.04);
+    border: 1px solid rgba(255,215,0,0.15);
+    border-left: 3px solid var(--yellow);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .warn-box strong { color: var(--yellow); }
+
+  /* INTERACTIVE VISUALIZER */
+  .visualizer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 20px 0;
+  }
+
+  .viz-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .viz-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Order Book visual */
+  .orderbook {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .ob-header {
+    color: var(--text3);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+
+  .ob-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 10px;
+    border-radius: 3px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+
+  .ob-row:hover { filter: brightness(1.2); }
+
+  .ob-ask { background: rgba(255,61,90,0.08); color: var(--red); }
+  .ob-bid { background: rgba(0,255,136,0.08); color: var(--green); }
+
+  .ob-spread {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--yellow);
+    font-size: 10px;
+    padding: 6px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 2px 0;
+  }
+
+  /* PROTOCOL / INTERFACE visual */
+  .protocol-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .protocol-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .protocol-card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .protocol-method {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    padding: 2px 0;
+  }
+
+  .protocol-method.implemented { color: var(--green); }
+  .protocol-method.implemented::before { content: '✓ '; }
+  .protocol-method.missing { color: var(--red); }
+  .protocol-method.missing::before { content: '✗ '; }
+
+  /* MRO CHAIN */
+  .mro-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-top: 12px;
+  }
+
+  .mro-node {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .mro-node.base { color: var(--purple); border-color: var(--border); }
+  .mro-node.object { color: var(--text3); border-color: var(--border); }
+
+  .mro-arrow {
+    color: var(--text3);
+    font-size: 16px;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  /* SECTION DIVIDER */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 32px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Descriptor flow */
+  .descriptor-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .flow-step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent2);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .flow-step-text { color: var(--text2); }
+  .flow-step-code { color: var(--accent); }
+
+  /* Full-width code */
+  .code-full { margin: 20px 0; }
+
+  /* Progress bar simulation */
+  .sim-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 6px 0;
+    overflow: hidden;
+  }
+
+  .sim-fill {
+    height: 100%;
+    border-radius: 2px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">// advanced python oop</div>
+    <h1>Object-Oriented Design<br><span>for Trading Systems</span></h1>
+    <p class="subtitle">$ vektor-labs :: market-microstructure :: production-grade patterns</p>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="show('encapsulation')">01 · Encapsulation</button>
+    <button class="nav-btn" onclick="show('inheritance')">02 · Inheritance & MRO</button>
+    <button class="nav-btn" onclick="show('polymorphism')">03 · Polymorphism</button>
+    <button class="nav-btn" onclick="show('protocols')">04 · Protocols / ABCs</button>
+    <button class="nav-btn" onclick="show('descriptors')">05 · Descriptors</button>
+    <button class="nav-btn" onclick="show('metaclasses')">06 · Metaclasses</button>
+    <button class="nav-btn" onclick="show('composition')">07 · Composition</button>
+  </nav>
+
+  <!-- ============================================================
+       01 · ENCAPSULATION
+  ============================================================ -->
+  <div id="encapsulation" class="section active">
+
+    <div class="concept-header">
+      <div class="concept-icon">🔒</div>
+      <div class="concept-meta">
+        <h2>Encapsulation — the OrderBook problem</h2>
+        <p>Encapsulation isn't just slapping underscores on attributes. It's about defining a clean interface and hiding the internal representation so you can swap it without breaking consumers.</p>
+        <span class="tag tag-blue">__slots__</span>
+        <span class="tag tag-green">@property</span>
+        <span class="tag tag-purple">name mangling</span>
+        <span class="tag tag-orange">__repr__ / __str__</span>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="code-card">
+        <div class="code-header">
+          <div class="code-header-left">
+            <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+            <span class="code-filename">order.py  —  BAD (no encapsulation)</span>
+          </div>
+        </div>
+        <pre><span class="cm"># ❌ everything public, no invariants</span>
+<span class="kw">class</span> <span class="cl">Order</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, price, qty, side):
+        <span class="pr">self</span>.price = price   <span class="cm"># mutable!</span>
+        <span class="pr">self</span>.qty   = qty     <span class="cm"># can be -1 externally</span>
+        <span class="pr">self</span>.side  = side    <span class="cm"># can be "SELL" or "sell"</span>
+        <span class="pr">self</span>.filled = <span class="nb">0</span>
+
+<span class="cm"># Caller does this and nothing stops it:</span>
+o = <span class="cl">Order</span>(<span class="nb">100.5</span>, <span class="nb">50</span>, <span class="st">"buy"</span>)
+o.qty = <span class="nb">-999</span>   <span class="cm"># 💀 silent corruption</span>
+o.side = <span class="st">"BOTH"</span>  <span class="cm"># 💀 invalid state</span></pre>
+      </div>
+
+      <div class="code-card">
+        <div class="code-header">
+          <div class="code-header-left">
+            <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+            <span class="code-filename">order.py  —  GOOD</span>
+          </div>
+        </div>
+        <pre><span class="kw">from</span> decimal <span class="kw">import</span> <span class="cl">Decimal</span>
+<span class="kw">from</span> enum <span class="kw">import</span> <span class="cl">Enum</span>, auto
+
+<span class="kw">class</span> <span class="cl">Side</span>(<span class="cl">Enum</span>):
+    BID = auto()
+    ASK = auto()
+
+<span class="kw">class</span> <span class="cl">Order</span>:
+    <span class="cm"># ✅ No __dict__; fixed memory layout</span>
+    __slots__ = (<span class="st">'_price'</span>, <span class="st">'_qty'</span>,
+                 <span class="st">'_side'</span>, <span class="st">'_filled'</span>)
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, price: <span class="cl">Decimal</span>,
+                 qty: <span class="nb">int</span>, side: <span class="cl">Side</span>):
+        <span class="pr">self</span>._price  = <span class="cl">Decimal</span>(price)
+        <span class="pr">self</span>.qty     = qty    <span class="cm"># through setter</span>
+        <span class="pr">self</span>._side   = side
+        <span class="pr">self</span>._filled = <span class="nb">0</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">qty</span>(<span class="pr">self</span>): <span class="kw">return</span> <span class="pr">self</span>._qty
+
+    <span class="dc">@qty.setter</span>
+    <span class="kw">def</span> <span class="fn">qty</span>(<span class="pr">self</span>, v):
+        <span class="kw">if</span> v &lt;= <span class="nb">0</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"qty must be &gt; 0, got {v}"</span>)
+        <span class="pr">self</span>._qty = v
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">remaining</span>(<span class="pr">self</span>):
+        <span class="kw">return</span> <span class="pr">self</span>._qty - <span class="pr">self</span>._filled</pre>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Why __slots__ matters for an OrderBook:</strong> A live order book can hold thousands of Order objects. Without <code>__slots__</code>, each instance carries a full <code>__dict__</code> (~200 bytes overhead). With slots, you drop to ~56 bytes per object. At 10,000 orders, that's 1.4 MB vs 200 KB. In a hot path this also means better cache locality.
+    </div>
+
+    <div class="section-label">live diagram</div>
+
+    <div class="visualizer">
+      <div class="viz-title">Order Book State — Encapsulated Internal Representation</div>
+      <div class="orderbook">
+        <div class="ob-header">ASKS (price · qty)</div>
+        <div class="ob-header">BIDS (price · qty)</div>
+        <div class="ob-row ob-ask"><span>29,450.00</span><span style="opacity:0.5">12</span></div>
+        <div class="ob-row ob-bid"><span>29,430.00</span><span style="opacity:0.5">88</span></div>
+        <div class="ob-row ob-ask"><span>29,445.00</span><span style="opacity:0.7">34</span></div>
+        <div class="ob-row ob-bid"><span>29,428.00</span><span style="opacity:0.7">120</span></div>
+        <div class="ob-row ob-ask"><span>29,440.00</span><span style="opacity:0.9">67</span></div>
+        <div class="ob-row ob-bid"><span>29,425.00</span><span style="opacity:0.9">250</span></div>
+        <div class="ob-row ob-ask" style="opacity:0.5"><span>29,435.00</span><span>180</span></div>
+        <div class="ob-row ob-bid" style="opacity:0.5"><span>29,420.00</span><span>45</span></div>
+        <div class="ob-spread">spread: $10.00 · mid: $29,435.00</div>
+      </div>
+      <div style="margin-top:14px; font-family: 'JetBrains Mono', monospace; font-size:11px; color: var(--text3)">
+        ↑ External code only sees .best_bid, .best_ask, .spread, .mid_price<br>
+        Internal SortedDict structure is hidden — swap to Redis, Numpy, C++ anytime
+      </div>
+    </div>
+
+    <div class="section-label">full class</div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">orderbook.py</span>
+        </div>
+      </div>
+      <pre><span class="kw">from</span> sortedcontainers <span class="kw">import</span> <span class="cl">SortedDict</span>
+<span class="kw">from</span> decimal <span class="kw">import</span> <span class="cl">Decimal</span>
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="cl">OrderBook</span>:
+    <span class="st">"""
+    Encapsulates bid/ask ladders.
+    Consumers NEVER touch _bids/_asks directly.
+    """</span>
+    __slots__ = (<span class="st">'_bids'</span>, <span class="st">'_asks'</span>, <span class="st">'_symbol'</span>, <span class="st">'__imbalance_cache'</span>)
+    <span class="cm">#                                         ^ double underscore = name-mangled</span>
+    <span class="cm">#                  → _OrderBook__imbalance_cache  (hard to access externally)</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, symbol: <span class="nb">str</span>):
+        <span class="pr">self</span>._symbol = symbol
+        <span class="pr">self</span>._bids   = <span class="cl">SortedDict</span>(<span class="kw">lambda</span> x: -x)  <span class="cm"># desc: best bid first</span>
+        <span class="pr">self</span>._asks   = <span class="cl">SortedDict</span>()               <span class="cm"># asc:  best ask first</span>
+        <span class="pr">self</span>.__imbalance_cache = <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">update</span>(<span class="pr">self</span>, side: <span class="cl">Side</span>, price: <span class="cl">Decimal</span>, qty: <span class="nb">int</span>) -&gt; <span class="kw">None</span>:
+        <span class="st">"""Public interface: the ONLY way to mutate state."""</span>
+        book = <span class="pr">self</span>._bids <span class="kw">if</span> side == <span class="cl">Side</span>.BID <span class="kw">else</span> <span class="pr">self</span>._asks
+        <span class="kw">if</span> qty == <span class="nb">0</span>:
+            book.pop(price, <span class="kw">None</span>)
+        <span class="kw">else</span>:
+            book[price] = qty
+        <span class="pr">self</span>.__imbalance_cache = <span class="kw">None</span>  <span class="cm"># invalidate cache on mutation</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">best_bid</span>(<span class="pr">self</span>) -&gt; Optional[<span class="cl">Decimal</span>]:
+        <span class="kw">return</span> <span class="pr">self</span>._bids.keys()[<span class="nb">0</span>] <span class="kw">if</span> <span class="pr">self</span>._bids <span class="kw">else</span> <span class="kw">None</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">best_ask</span>(<span class="pr">self</span>) -&gt; Optional[<span class="cl">Decimal</span>]:
+        <span class="kw">return</span> <span class="pr">self</span>._asks.keys()[<span class="nb">0</span>] <span class="kw">if</span> <span class="pr">self</span>._asks <span class="kw">else</span> <span class="kw">None</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">spread</span>(<span class="pr">self</span>) -&gt; Optional[<span class="cl">Decimal</span>]:
+        b, a = <span class="pr">self</span>.best_bid, <span class="pr">self</span>.best_ask
+        <span class="kw">return</span> (a - b) <span class="kw">if</span> b <span class="kw">and</span> a <span class="kw">else</span> <span class="kw">None</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">imbalance</span>(<span class="pr">self</span>, depth: <span class="nb">int</span> = <span class="nb">5</span>) -&gt; <span class="nb">float</span>:
+        <span class="st">"""
+        OBI = (bid_vol - ask_vol) / (bid_vol + ask_vol)
+        Cached until next update() call.
+        """</span>
+        <span class="kw">if</span> <span class="pr">self</span>.__imbalance_cache <span class="kw">is not None</span>:
+            <span class="kw">return</span> <span class="pr">self</span>.__imbalance_cache
+        bv = sum(list(<span class="pr">self</span>._bids.values())[:depth])
+        av = sum(list(<span class="pr">self</span>._asks.values())[:depth])
+        total = bv + av
+        <span class="pr">self</span>.__imbalance_cache = (bv - av) / total <span class="kw">if</span> total <span class="kw">else</span> <span class="nb">0.0</span>
+        <span class="kw">return</span> <span class="pr">self</span>.__imbalance_cache
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="pr">self</span>):
+        <span class="kw">return</span> (<span class="st">f"OrderBook({self._symbol!r} "
+                f"bid={self.best_bid} ask={self.best_ask} "
+                f"spread={self.spread})"</span>)</pre>
+    </div>
+
+    <div class="warn-box">
+      <strong>Key insight:</strong> The <code>__imbalance_cache</code> with double underscore triggers Python's name mangling → stored as <code>_OrderBook__imbalance_cache</code>. Subclasses won't accidentally stomp it. This is real production encapsulation, not just naming convention.
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       02 · INHERITANCE & MRO
+  ============================================================ -->
+  <div id="inheritance" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">🧬</div>
+      <div class="concept-meta">
+        <h2>Inheritance & MRO — Detector Hierarchy</h2>
+        <p>Python uses the C3 linearization algorithm (MRO) to determine method resolution order in multiple inheritance. In a manipulation detection system, you'll have a hierarchy of detectors that inherit shared logic.</p>
+        <span class="tag tag-blue">super()</span>
+        <span class="tag tag-green">C3 linearization</span>
+        <span class="tag tag-purple">cooperative MI</span>
+        <span class="tag tag-orange">mixin pattern</span>
+      </div>
+    </div>
+
+    <div class="section-label">class hierarchy diagram</div>
+
+    <div class="diagram-card">
+      <div class="diagram-title">// vektor · detector hierarchy</div>
+
+      <div class="class-box class-abstract">
+        <div class="class-name">«abstract» BaseDetector</div>
+        <div class="class-attrs">
+          <span class="attr-type">+ </span>symbol: str<br>
+          <span class="attr-type">+ </span>window: int<br>
+          <span class="attr-type">- </span>_scores: deque
+        </div>
+        <div class="class-methods">
+          <span class="method-name">+ detect(snapshot) → Alert | None</span><br>
+          <span class="method-name">+ score(snapshot) → float</span>  <span class="attr-type">«abstract»</span><br>
+          <span class="method-private">- _normalize(raw) → float</span>
+        </div>
+      </div>
+
+      <div class="arrow-container">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">inherits ▼</div>
+        <div class="arrow-line"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="class-box">
+          <div class="class-name">SpoofingDetector</div>
+          <div class="class-attrs"><span class="attr-type">+ </span>cancel_threshold: float</div>
+          <div class="class-methods"><span class="method-name">+ score(snapshot)</span></div>
+        </div>
+        <div class="class-box">
+          <div class="class-name">LayeringDetector</div>
+          <div class="class-attrs"><span class="attr-type">+ </span>depth: int</div>
+          <div class="class-methods"><span class="method-name">+ score(snapshot)</span></div>
+        </div>
+        <div class="class-box">
+          <div class="class-name">WashTradeDetector</div>
+          <div class="class-attrs"><span class="attr-type">+ </span>time_window: int</div>
+          <div class="class-methods"><span class="method-name">+ score(snapshot)</span></div>
+        </div>
+      </div>
+
+      <div class="arrow-container" style="margin-top:10px">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">+ mixin ▼</div>
+        <div class="arrow-line"></div>
+      </div>
+
+      <div class="class-box" style="border-color:var(--orange)">
+        <div class="class-name" style="color:var(--orange)">AlertingMixin</div>
+        <div class="class-attrs"><span class="attr-type">+ </span>alert_threshold: float<br><span class="attr-type">+ </span>cooldown_ms: int</div>
+        <div class="class-methods">
+          <span class="method-name">+ maybe_alert(score) → Alert | None</span>
+        </div>
+      </div>
+
+      <div class="arrow-container">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">MI composition ▼</div>
+        <div class="arrow-line"></div>
+      </div>
+
+      <div class="class-box" style="border-color:var(--green)">
+        <div class="class-name" style="color:var(--green)">AlertingSpoofer(AlertingMixin, SpoofingDetector)</div>
+        <div class="class-attrs"><span class="attr-type">inherits both interfaces</span></div>
+        <div class="class-methods"><span class="method-name">+ detect(snapshot)</span>  <span class="attr-type">← uses super() chain</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">MRO resolution order</div>
+
+    <div class="visualizer">
+      <div class="viz-title">AlertingSpoofer · Method Resolution Order (C3)</div>
+      <div class="mro-chain">
+        <div class="mro-node">AlertingSpoofer</div>
+        <div class="mro-arrow">→</div>
+        <div class="mro-node base">AlertingMixin</div>
+        <div class="mro-arrow">→</div>
+        <div class="mro-node base">SpoofingDetector</div>
+        <div class="mro-arrow">→</div>
+        <div class="mro-node base">BaseDetector</div>
+        <div class="mro-arrow">→</div>
+        <div class="mro-node object">object</div>
+      </div>
+      <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">
+        # Verify in Python:<br>
+        &gt;&gt;&gt; AlertingSpoofer.__mro__
+      </div>
+    </div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">detectors.py</span>
+        </div>
+      </div>
+      <pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+<span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="cl">BaseDetector</span>(ABC):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, symbol: <span class="nb">str</span>, window: <span class="nb">int</span> = <span class="nb">100</span>):
+        <span class="pr">self</span>.symbol  = symbol
+        <span class="pr">self</span>.window  = window
+        <span class="pr">self</span>._scores: deque[<span class="nb">float</span>] = deque(maxlen=window)
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">score</span>(<span class="pr">self</span>, snapshot: dict) -&gt; <span class="nb">float</span>:
+        <span class="st">"""Return a raw anomaly score [0, 1]."""</span>
+
+    <span class="kw">def</span> <span class="fn">detect</span>(<span class="pr">self</span>, snapshot: dict) -&gt; Optional[<span class="st">'Alert'</span>]:
+        s = <span class="pr">self</span>.score(snapshot)
+        <span class="pr">self</span>._scores.append(s)
+        <span class="kw">return</span> <span class="kw">None</span>  <span class="cm"># base: no alerting logic</span>
+
+    <span class="kw">def</span> <span class="fn">_normalize</span>(<span class="pr">self</span>, raw: <span class="nb">float</span>, lo=<span class="nb">0.0</span>, hi=<span class="nb">1.0</span>) -&gt; <span class="nb">float</span>:
+        <span class="kw">return</span> max(<span class="nb">0.0</span>, min(<span class="nb">1.0</span>, (raw - lo) / (hi - lo + <span class="nb">1e-9</span>)))
+
+
+<span class="cm"># ─── Mixin (no __init__ state of its own → cooperative) ───────────</span>
+<span class="kw">class</span> <span class="cl">AlertingMixin</span>:
+    alert_threshold: <span class="nb">float</span> = <span class="nb">0.75</span>
+    cooldown_ms:     <span class="nb">int</span>   = <span class="nb">5000</span>
+    _last_alert_ts:  <span class="nb">float</span> = <span class="nb">0.0</span>
+
+    <span class="kw">def</span> <span class="fn">detect</span>(<span class="pr">self</span>, snapshot: dict):
+        <span class="cm"># super() here follows MRO → calls SpoofingDetector.detect</span>
+        result = <span class="nb">super</span>().detect(snapshot)
+        score  = <span class="pr">self</span>._scores[-<span class="nb">1</span>] <span class="kw">if</span> <span class="pr">self</span>._scores <span class="kw">else</span> <span class="nb">0.0</span>
+        <span class="kw">return</span> <span class="pr">self</span>._maybe_alert(score) <span class="kw">or</span> result
+
+    <span class="kw">def</span> <span class="fn">_maybe_alert</span>(<span class="pr">self</span>, score: <span class="nb">float</span>):
+        now = time.time() * <span class="nb">1000</span>
+        on_cooldown = (now - <span class="pr">self</span>._last_alert_ts) &lt; <span class="pr">self</span>.cooldown_ms
+        <span class="kw">if</span> score &gt;= <span class="pr">self</span>.alert_threshold <span class="kw">and not</span> on_cooldown:
+            <span class="pr">self</span>._last_alert_ts = now
+            <span class="kw">return</span> <span class="cl">Alert</span>(symbol=<span class="pr">self</span>.symbol, score=score,
+                         kind=<span class="pr">self</span>.__class__.__name__)
+        <span class="kw">return</span> <span class="kw">None</span>
+
+
+<span class="cm"># ─── Concrete detector ────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">SpoofingDetector</span>(<span class="cl">BaseDetector</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, symbol, cancel_threshold=<span class="nb">0.8</span>, **kw):
+        <span class="nb">super</span>().__init__(symbol, **kw)
+        <span class="pr">self</span>.cancel_threshold = cancel_threshold
+
+    <span class="kw">def</span> <span class="fn">score</span>(<span class="pr">self</span>, snapshot: dict) -&gt; <span class="nb">float</span>:
+        cancel_rate = snapshot.get(<span class="st">'cancel_rate'</span>, <span class="nb">0.0</span>)
+        obi         = abs(snapshot.get(<span class="st">'obi'</span>, <span class="nb">0.0</span>))
+        raw = cancel_rate * <span class="nb">0.7</span> + obi * <span class="nb">0.3</span>
+        <span class="kw">return</span> <span class="pr">self</span>._normalize(raw)
+
+
+<span class="cm"># ─── Composed class using both ────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">AlertingSpoofer</span>(<span class="cl">AlertingMixin</span>, <span class="cl">SpoofingDetector</span>):
+    <span class="st">"""MRO: AlertingSpoofer → AlertingMixin → SpoofingDetector → BaseDetector"""</span>
+    <span class="cm"># No extra code needed. super() chain handles everything.</span>
+    <span class="kw">pass</span></pre>
+    </div>
+
+    <div class="warn-box">
+      <strong>super() is not "call the parent"</strong> — it calls the <em>next class in the MRO</em>. This is why the cooperative mixin pattern works. <code>AlertingMixin.detect</code> calling <code>super().detect()</code> actually calls <code>SpoofingDetector.detect</code>, not <code>BaseDetector.detect</code>.
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       03 · POLYMORPHISM
+  ============================================================ -->
+  <div id="polymorphism" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">🎭</div>
+      <div class="concept-meta">
+        <h2>Polymorphism — one interface, many detectors</h2>
+        <p>Polymorphism lets you treat SpoofingDetector, LayeringDetector, WashTradeDetector identically through a shared interface. The engine doesn't know which detector it's running — it just calls <code>.detect()</code>.</p>
+        <span class="tag tag-blue">duck typing</span>
+        <span class="tag tag-green">__call__</span>
+        <span class="tag tag-purple">operator overloading</span>
+        <span class="tag tag-orange">structural subtyping</span>
+      </div>
+    </div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">engine.py  —  polymorphic detector pipeline</span>
+        </div>
+      </div>
+      <pre><span class="kw">class</span> <span class="cl">DetectionEngine</span>:
+    <span class="st">"""
+    Knows nothing about specific detector types.
+    Works with ANY object that has a .detect(snapshot) method.
+    This is Python duck typing — no interface declaration needed.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>):
+        <span class="pr">self</span>._detectors: list = []
+
+    <span class="kw">def</span> <span class="fn">register</span>(<span class="pr">self</span>, detector) -&gt; <span class="st">'DetectionEngine'</span>:
+        <span class="pr">self</span>._detectors.append(detector)
+        <span class="kw">return</span> <span class="pr">self</span>  <span class="cm"># fluent interface</span>
+
+    <span class="kw">def</span> <span class="fn">run</span>(<span class="pr">self</span>, snapshot: dict) -&gt; list:
+        alerts = []
+        <span class="kw">for</span> det <span class="kw">in</span> <span class="pr">self</span>._detectors:
+            alert = det.detect(snapshot)  <span class="cm"># ← pure polymorphism</span>
+            <span class="kw">if</span> alert: alerts.append(alert)
+        <span class="kw">return</span> alerts
+
+    <span class="cm"># Operator overloading: engine + detector = new engine</span>
+    <span class="kw">def</span> <span class="fn">__add__</span>(<span class="pr">self</span>, detector):
+        self.register(detector)
+        <span class="kw">return</span> <span class="pr">self</span>
+
+    <span class="cm"># Makes the engine callable: engine(snapshot)</span>
+    <span class="kw">def</span> <span class="fn">__call__</span>(<span class="pr">self</span>, snapshot: dict) -&gt; list:
+        <span class="kw">return</span> <span class="pr">self</span>.run(snapshot)
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="pr">self</span>): <span class="kw">return</span> len(<span class="pr">self</span>._detectors)
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="pr">self</span>):
+        names = [d.__class__.__name__ <span class="kw">for</span> d <span class="kw">in</span> <span class="pr">self</span>._detectors]
+        <span class="kw">return</span> <span class="st">f"DetectionEngine({names})"</span>
+
+
+<span class="cm"># ─── Usage ────────────────────────────────────────────────────────</span>
+engine = (
+    <span class="cl">DetectionEngine</span>()
+    + <span class="cl">AlertingSpoofer</span>(<span class="st">"BTCUSDT"</span>)
+    + <span class="cl">LayeringDetector</span>(<span class="st">"BTCUSDT"</span>, depth=<span class="nb">10</span>)
+    + <span class="cl">WashTradeDetector</span>(<span class="st">"BTCUSDT"</span>, time_window=<span class="nb">60</span>)
+)
+
+<span class="cm"># This custom lambda-style "detector" also works — duck typing</span>
+<span class="kw">class</span> <span class="cl">VolumeSpike</span>:
+    <span class="kw">def</span> <span class="fn">detect</span>(<span class="pr">self</span>, snap):
+        <span class="kw">if</span> snap.get(<span class="st">'volume'</span>, <span class="nb">0</span>) &gt; <span class="nb">1_000_000</span>:
+            <span class="kw">return</span> <span class="st">f"VolumeSpike: {snap['volume']}"</span>
+
+engine + <span class="cl">VolumeSpike</span>()  <span class="cm"># works! No inheritance required.</span>
+
+<span class="cm"># Run — engine acts like a function</span>
+alerts = engine({
+    <span class="st">'cancel_rate'</span>: <span class="nb">0.92</span>,
+    <span class="st">'obi'</span>: <span class="nb">0.68</span>,
+    <span class="st">'volume'</span>: <span class="nb">2_500_000</span>
+})</pre>
+    </div>
+
+    <div class="info-box">
+      <strong>Duck typing vs nominal typing:</strong> Python doesn't require <code>VolumeSpike</code> to inherit from <code>BaseDetector</code>. It just needs a <code>.detect()</code> method. This is Python's structural subtyping. For production code with type checking, pair this with <code>Protocol</code> (next section).
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       04 · PROTOCOLS / ABCs
+  ============================================================ -->
+  <div id="protocols" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">📐</div>
+      <div class="concept-meta">
+        <h2>Protocols & ABCs — define contracts</h2>
+        <p>ABCs enforce a contract at instantiation time. Protocols enable structural typing — static type checkers verify compliance without inheritance. Critical for a multi-component system.</p>
+        <span class="tag tag-blue">typing.Protocol</span>
+        <span class="tag tag-green">ABC / abstractmethod</span>
+        <span class="tag tag-purple">runtime_checkable</span>
+        <span class="tag tag-orange">@overload</span>
+      </div>
+    </div>
+
+    <div class="split">
+      <div>
+        <div class="section-label">ABC — runtime enforcement</div>
+        <div class="code-card">
+          <div class="code-header">
+            <div class="code-header-left">
+              <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+              <span class="code-filename">abc_pattern.py</span>
+            </div>
+          </div>
+          <pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="cl">DataFeed</span>(ABC):
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">async def</span> <span class="fn">subscribe</span>(<span class="pr">self</span>,
+            symbols: list[<span class="nb">str</span>]) -&gt; <span class="kw">None</span>: ...
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">async def</span> <span class="fn">next_event</span>(<span class="pr">self</span>) -&gt; dict: ...
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">async def</span> <span class="fn">close</span>(<span class="pr">self</span>) -&gt; <span class="kw">None</span>: ...
+
+<span class="cm"># ❌ Raises TypeError at class definition</span>
+<span class="kw">class</span> <span class="cl">BadFeed</span>(<span class="cl">DataFeed</span>):
+    <span class="kw">async def</span> <span class="fn">subscribe</span>(<span class="pr">self</span>, s): ...
+    <span class="cm"># forgot next_event and close</span>
+    <span class="cm"># → TypeError: Can't instantiate</span>
+    <span class="cm">#   abstract class BadFeed</span></pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Protocol — static typing only</div>
+        <div class="code-card">
+          <div class="code-header">
+            <div class="code-header-left">
+              <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+              <span class="code-filename">protocol_pattern.py</span>
+            </div>
+          </div>
+          <pre><span class="kw">from</span> typing <span class="kw">import</span> Protocol, runtime_checkable
+
+<span class="dc">@runtime_checkable</span>
+<span class="kw">class</span> <span class="cl">Detector</span>(<span class="cl">Protocol</span>):
+    symbol: <span class="nb">str</span>
+
+    <span class="kw">def</span> <span class="fn">detect</span>(<span class="pr">self</span>, snap: dict
+              ) -&gt; Optional[<span class="st">'Alert'</span>]: ...
+
+<span class="cm"># ✅ No inheritance needed!</span>
+<span class="kw">class</span> <span class="cl">MyDetector</span>:
+    symbol = <span class="st">"ETHUSDT"</span>
+    <span class="kw">def</span> <span class="fn">detect</span>(<span class="pr">self</span>, snap):
+        <span class="kw">return</span> <span class="kw">None</span>
+
+<span class="cm"># isinstance check works because @runtime_checkable</span>
+<span class="nb">isinstance</span>(<span class="cl">MyDetector</span>(), <span class="cl">Detector</span>)  <span class="cm"># → True</span>
+
+<span class="cm"># mypy / pyright catches this statically:</span>
+<span class="kw">def</span> <span class="fn">run</span>(d: <span class="cl">Detector</span>) -&gt; <span class="kw">None</span>: ...
+run(<span class="cl">MyDetector</span>())   <span class="cm"># ✅ passes type check</span>
+run(<span class="st">"not a detector"</span>)  <span class="cm"># ❌ type error</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="visualizer">
+      <div class="viz-title">Protocol compliance matrix</div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <div class="protocol-card-name">Detector Protocol</div>
+          <div class="protocol-method">symbol: str</div>
+          <div class="protocol-method">detect(snap) → Alert</div>
+          <div class="protocol-method">score(snap) → float</div>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card-name">SpoofingDetector</div>
+          <div class="protocol-method implemented">symbol: str</div>
+          <div class="protocol-method implemented">detect(snap)</div>
+          <div class="protocol-method implemented">score(snap)</div>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card-name">VolumeSpike</div>
+          <div class="protocol-method implemented">symbol: str</div>
+          <div class="protocol-method implemented">detect(snap)</div>
+          <div class="protocol-method missing">score(snap)</div>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card-name">BinanceFeed</div>
+          <div class="protocol-method missing">symbol: str</div>
+          <div class="protocol-method missing">detect(snap)</div>
+          <div class="protocol-method missing">score(snap)</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">
+        BinanceFeed isn't a Detector — it implements a different Protocol (DataFeed)
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       05 · DESCRIPTORS
+  ============================================================ -->
+  <div id="descriptors" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">⚙️</div>
+      <div class="concept-meta">
+        <h2>Descriptors — reusable attribute logic</h2>
+        <p>Descriptors power <code>@property</code>, <code>@classmethod</code>, <code>@staticmethod</code> internally. Writing custom descriptors lets you attach validation, caching, or transformation logic to any attribute, once, reusable across every class.</p>
+        <span class="tag tag-blue">__get__ / __set__</span>
+        <span class="tag tag-green">data vs non-data</span>
+        <span class="tag tag-purple">__set_name__</span>
+        <span class="tag tag-orange">WeakKeyDictionary</span>
+      </div>
+    </div>
+
+    <div class="section-label">attribute lookup flow</div>
+
+    <div class="visualizer">
+      <div class="viz-title">Python attribute lookup order</div>
+      <div class="descriptor-flow">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div><span class="flow-step-text">Data descriptor on type</span> <span class="flow-step-code">(has __set__)</span> <span style="color:var(--green);font-family:JetBrains Mono,monospace;font-size:10px"> ← highest priority</span></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div><span class="flow-step-text">Instance __dict__</span> <span class="flow-step-code">obj.__dict__['attr']</span></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div><span class="flow-step-text">Non-data descriptor / class attr</span> <span class="flow-step-code">(has __get__ only)</span></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div><span class="flow-step-text">AttributeError</span> <span class="flow-step-code">→ __getattr__ fallback</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">descriptors.py  —  validated fields for trading params</span>
+        </div>
+      </div>
+      <pre><span class="kw">from</span> weakref <span class="kw">import</span> <span class="cl">WeakKeyDictionary</span>
+
+<span class="kw">class</span> <span class="cl">BoundedFloat</span>:
+    <span class="st">"""
+    Descriptor: float that must stay in [lo, hi].
+    Reuse on any class — no boilerplate.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, lo: <span class="nb">float</span>, hi: <span class="nb">float</span>):
+        <span class="pr">self</span>.lo, <span class="pr">self</span>.hi = lo, hi
+        <span class="pr">self</span>._data = <span class="cl">WeakKeyDictionary</span>()  <span class="cm"># per-instance storage</span>
+        <span class="pr">self</span>._name = <span class="st">''</span>
+
+    <span class="kw">def</span> <span class="fn">__set_name__</span>(<span class="pr">self</span>, owner, name):
+        <span class="cm"># Called at class creation: knows its own attribute name</span>
+        <span class="pr">self</span>._name = name
+
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="pr">self</span>, obj, objtype=<span class="kw">None</span>):
+        <span class="kw">if</span> obj <span class="kw">is None</span>: <span class="kw">return</span> <span class="pr">self</span>        <span class="cm"># class access → return descriptor</span>
+        <span class="kw">return</span> <span class="pr">self</span>._data.get(obj, <span class="nb">0.0</span>)
+
+    <span class="kw">def</span> <span class="fn">__set__</span>(<span class="pr">self</span>, obj, value: <span class="nb">float</span>):
+        <span class="kw">if not</span> (<span class="pr">self</span>.lo &lt;= value &lt;= <span class="pr">self</span>.hi):
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(
+                <span class="st">f"{self._name}={value} outside [{self.lo}, {self.hi}]"</span>)
+        <span class="pr">self</span>._data[obj] = value
+
+
+<span class="kw">class</span> <span class="cl">PositiveInt</span>:
+    <span class="st">"""Descriptor: integer > 0."""</span>
+    <span class="kw">def</span> <span class="fn">__set_name__</span>(<span class="pr">self</span>, owner, name):
+        <span class="pr">self</span>._attr = <span class="st">'_'</span> + name   <span class="cm"># store as _window on instance dict</span>
+
+    <span class="kw">def</span> <span class="fn">__get__</span>(<span class="pr">self</span>, obj, _=<span class="kw">None</span>):
+        <span class="kw">if</span> obj <span class="kw">is None</span>: <span class="kw">return</span> <span class="pr">self</span>
+        <span class="kw">return</span> getattr(obj, <span class="pr">self</span>._attr, <span class="nb">1</span>)
+
+    <span class="kw">def</span> <span class="fn">__set__</span>(<span class="pr">self</span>, obj, val: <span class="nb">int</span>):
+        <span class="kw">if not</span> isinstance(val, <span class="nb">int</span>) <span class="kw">or</span> val &lt;= <span class="nb">0</span>:
+            <span class="kw">raise</span> <span class="cl">TypeError</span>(<span class="st">f"Must be int > 0, got {val!r}"</span>)
+        setattr(obj, <span class="pr">self</span>._attr, val)
+
+
+<span class="cm"># ─── Apply descriptors declaratively ──────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">DetectorConfig</span>:
+    <span class="cm"># These are class-level descriptors. No @property boilerplate per attr.</span>
+    alert_threshold = <span class="cl">BoundedFloat</span>(<span class="nb">0.0</span>, <span class="nb">1.0</span>)
+    cancel_threshold = <span class="cl">BoundedFloat</span>(<span class="nb">0.0</span>, <span class="nb">1.0</span>)
+    window = <span class="cl">PositiveInt</span>()
+    depth  = <span class="cl">PositiveInt</span>()
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="pr">self</span>, **kw):
+        <span class="kw">for</span> k, v <span class="kw">in</span> kw.items():
+            setattr(<span class="pr">self</span>, k, v)  <span class="cm"># all go through descriptors</span>
+
+cfg = <span class="cl">DetectorConfig</span>(alert_threshold=<span class="nb">0.8</span>, window=<span class="nb">100</span>)
+cfg.alert_threshold = <span class="nb">1.5</span>  <span class="cm"># ❌ ValueError: outside [0.0, 1.0]</span>
+cfg.window = <span class="nb">0</span>              <span class="cm"># ❌ TypeError: Must be int > 0</span></pre>
+    </div>
+
+    <div class="info-box">
+      <strong>Why WeakKeyDictionary?</strong> If you store instance data on the descriptor object itself (as a regular dict keyed by instance), the instance is never garbage collected — the descriptor holds a strong reference. WeakKeyDictionary uses weak references, so when an instance dies, its entry in the descriptor is cleaned up automatically.
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       06 · METACLASSES
+  ============================================================ -->
+  <div id="metaclasses" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">🧠</div>
+      <div class="concept-meta">
+        <h2>Metaclasses — classes that build classes</h2>
+        <p>A metaclass intercepts class creation. Use them to auto-register detectors, enforce naming conventions, inject logging, or build plugin systems without modifying individual classes.</p>
+        <span class="tag tag-blue">type</span>
+        <span class="tag tag-green">__init_subclass__</span>
+        <span class="tag tag-purple">__new__ vs __init__</span>
+        <span class="tag tag-orange">class registry pattern</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Rule of thumb:</strong> Most of the time, use <code>__init_subclass__</code> instead of a full metaclass. It was added in Python 3.6 specifically to cover the common metaclass use cases with much less complexity.
+    </div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">registry.py  —  auto-register detectors via __init_subclass__</span>
+        </div>
+      </div>
+      <pre><span class="kw">class</span> <span class="cl">BaseDetector</span>(ABC):
+    <span class="cm"># Class-level registry: name → class</span>
+    _registry: dict[<span class="nb">str</span>, type] = {}
+
+    <span class="kw">def</span> <span class="fn">__init_subclass__</span>(cls, name: <span class="nb">str</span> = <span class="st">""</span>, **kw):
+        <span class="st">"""
+        Called automatically whenever someone subclasses BaseDetector.
+        name= is passed as a keyword arg in the class statement.
+        """</span>
+        <span class="nb">super</span>().__init_subclass__(**kw)
+        key = name <span class="kw">or</span> cls.__name__
+        <span class="kw">if</span> key <span class="kw">in</span> cls._registry:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"Detector '{key}' already registered"</span>)
+        cls._registry[key] = cls
+
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">create</span>(cls, name: <span class="nb">str</span>, **kw) -&gt; <span class="st">'BaseDetector'</span>:
+        <span class="st">"""Factory: instantiate any detector by name."""</span>
+        <span class="kw">if</span> name <span class="kw">not in</span> cls._registry:
+            <span class="kw">raise</span> <span class="cl">KeyError</span>(<span class="st">f"Unknown detector: {name!r}. "</span>
+                           <span class="st">f"Available: {list(cls._registry)}"</span>)
+        <span class="kw">return</span> cls._registry[name](**kw)
+
+
+<span class="cm"># ─── Subclasses auto-register ─────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">SpoofingDetector</span>(<span class="cl">BaseDetector</span>, name=<span class="st">"spoofing"</span>):
+    ...
+
+<span class="kw">class</span> <span class="cl">LayeringDetector</span>(<span class="cl">BaseDetector</span>, name=<span class="st">"layering"</span>):
+    ...
+
+<span class="kw">class</span> <span class="cl">WashTradeDetector</span>(<span class="cl">BaseDetector</span>, name=<span class="st">"wash_trade"</span>):
+    ...
+
+<span class="cm"># ─── Config-driven instantiation ──────────────────────────────────</span>
+config = [
+    {<span class="st">"type"</span>: <span class="st">"spoofing"</span>,   <span class="st">"symbol"</span>: <span class="st">"BTCUSDT"</span>},
+    {<span class="st">"type"</span>: <span class="st">"layering"</span>,   <span class="st">"symbol"</span>: <span class="st">"ETHUSDT"</span>},
+    {<span class="st">"type"</span>: <span class="st">"wash_trade"</span>, <span class="st">"symbol"</span>: <span class="st">"SOLUSDT"</span>},
+]
+
+detectors = [
+    <span class="cl">BaseDetector</span>.create(c[<span class="st">"type"</span>], symbol=c[<span class="st">"symbol"</span>])
+    <span class="kw">for</span> c <span class="kw">in</span> config
+]
+<span class="cm"># Load from YAML/JSON, instantiate correct class — zero if-elif chains</span></pre>
+    </div>
+
+    <div class="section-label">actual metaclass (when you need it)</div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">meta.py  —  enforce naming conventions at class creation</span>
+        </div>
+      </div>
+      <pre><span class="kw">class</span> <span class="cl">DetectorMeta</span>(<span class="nb">type</span>):
+    <span class="st">"""
+    type is the metaclass of all classes.
+    Subclass it to intercept class creation.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__new__</span>(mcs, name, bases, namespace):
+        <span class="cm"># Enforce: every non-abstract Detector must define 'KIND'</span>
+        <span class="kw">if</span> bases <span class="kw">and</span> <span class="st">'KIND'</span> <span class="kw">not in</span> namespace:
+            <span class="kw">raise</span> <span class="cl">TypeError</span>(
+                <span class="st">f"Detector subclass '{name}' must define KIND = 'spoofing' etc."</span>)
+        cls = <span class="nb">super</span>().__new__(mcs, name, bases, namespace)
+        <span class="kw">return</span> cls
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(cls, name, bases, namespace):
+        <span class="nb">super</span>().__init__(name, bases, namespace)
+        <span class="cm"># Auto-inject a class-level logger</span>
+        <span class="kw">import</span> logging
+        cls.logger = logging.getLogger(<span class="st">f"vektor.{name}"</span>)
+
+
+<span class="kw">class</span> <span class="cl">BaseDetector</span>(metaclass=<span class="cl">DetectorMeta</span>):
+    KIND = <span class="st">"base"</span>   <span class="cm"># base defines it, subclasses must too</span>
+
+<span class="cm"># ❌ TypeError at class definition time, not at runtime</span>
+<span class="kw">class</span> <span class="cl">BadDetector</span>(<span class="cl">BaseDetector</span>):
+    <span class="kw">pass</span>  <span class="cm"># forgot KIND → TypeError immediately</span>
+
+<span class="cm"># ✅ Correct</span>
+<span class="kw">class</span> <span class="cl">SpoofingDetector</span>(<span class="cl">BaseDetector</span>):
+    KIND = <span class="st">"spoofing"</span>
+    <span class="cm"># self.logger is injected automatically</span></pre>
+    </div>
+
+    <div class="warn-box">
+      <strong>Metaclass conflicts:</strong> If two bases have different metaclasses, Python raises <code>TypeError: metaclass conflict</code>. This is why most libraries avoid metaclasses and use <code>__init_subclass__</code> instead — it composes without conflicts.
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       07 · COMPOSITION
+  ============================================================ -->
+  <div id="composition" class="section">
+
+    <div class="concept-header">
+      <div class="concept-icon">🧩</div>
+      <div class="concept-meta">
+        <h2>Composition over Inheritance — the real pattern</h2>
+        <p>A deep inheritance tree becomes brittle. The alternative: small, single-purpose objects composed together. This is how Django ORM, SQLAlchemy, FastAPI, and every solid Python framework is actually built.</p>
+        <span class="tag tag-blue">dataclasses</span>
+        <span class="tag tag-green">__post_init__</span>
+        <span class="tag tag-purple">dependency injection</span>
+        <span class="tag tag-orange">__slots__ + frozen</span>
+      </div>
+    </div>
+
+    <div class="code-full code-card">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
+          <span class="code-filename">vektor_core.py  —  full composition example</span>
+        </div>
+      </div>
+      <pre><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> typing <span class="kw">import</span> Protocol
+
+<span class="cm"># ─── Value objects (immutable, frozen=True) ───────────────────────</span>
+<span class="dc">@dataclass</span>(frozen=<span class="kw">True</span>, slots=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="cl">Snapshot</span>:
+    symbol:      <span class="nb">str</span>
+    timestamp:   <span class="nb">float</span>
+    best_bid:    <span class="nb">float</span>
+    best_ask:    <span class="nb">float</span>
+    obi:         <span class="nb">float</span>   <span class="cm"># order book imbalance</span>
+    cancel_rate: <span class="nb">float</span>
+    volume:      <span class="nb">float</span>
+
+    <span class="kw">def</span> <span class="fn">__post_init__</span>(<span class="pr">self</span>):
+        <span class="kw">if</span> <span class="pr">self</span>.best_bid &gt;= <span class="pr">self</span>.best_ask:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"bid >= ask: crossed book"</span>)
+        <span class="kw">if not</span> (-<span class="nb">1.0</span> &lt;= <span class="pr">self</span>.obi &lt;= <span class="nb">1.0</span>):
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"obi {self.obi} out of [-1, 1]"</span>)
+
+
+<span class="dc">@dataclass</span>(frozen=<span class="kw">True</span>, slots=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="cl">Alert</span>:
+    symbol:    <span class="nb">str</span>
+    score:     <span class="nb">float</span>
+    kind:      <span class="nb">str</span>
+    timestamp: <span class="nb">float</span> = field(default_factory=<span class="kw">lambda</span>: __import__(<span class="st">'time'</span>).time())
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="pr">self</span>):
+        <span class="kw">return</span> <span class="st">f"[{self.kind.upper()}] {self.symbol} score={self.score:.2f}"</span>
+
+
+<span class="cm"># ─── Protocols as dependencies ────────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">AlertSink</span>(<span class="cl">Protocol</span>):
+    <span class="kw">async def</span> <span class="fn">send</span>(<span class="pr">self</span>, alert: <span class="cl">Alert</span>) -&gt; <span class="kw">None</span>: ...
+
+<span class="kw">class</span> <span class="cl">SnapshotSource</span>(<span class="cl">Protocol</span>):
+    <span class="kw">async def</span> <span class="fn">__aiter__</span>(<span class="pr">self</span>) -&gt; <span class="cl">AsyncIterator</span>[<span class="cl">Snapshot</span>]: ...
+
+
+<span class="cm"># ─── Engine: composed of injected dependencies ────────────────────</span>
+<span class="kw">class</span> <span class="cl">VektorEngine</span>:
+    <span class="st">"""
+    Doesn't inherit from anything business-logic-y.
+    Composed of: source, detectors[], sinks[].
+    Each can be swapped independently (test vs production).
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        <span class="pr">self</span>,
+        source:    <span class="cl">SnapshotSource</span>,
+        detectors: list,          <span class="cm"># list[Detector Protocol]</span>
+        sinks:     list[<span class="cl">AlertSink</span>]
+    ):
+        <span class="pr">self</span>._source    = source
+        <span class="pr">self</span>._detectors = detectors
+        <span class="pr">self</span>._sinks      = sinks
+
+    <span class="kw">async def</span> <span class="fn">run</span>(<span class="pr">self</span>) -&gt; <span class="kw">None</span>:
+        <span class="kw">async for</span> snap <span class="kw">in</span> <span class="pr">self</span>._source:
+            <span class="kw">for</span> det <span class="kw">in</span> <span class="pr">self</span>._detectors:
+                alert = det.detect(snap)
+                <span class="kw">if</span> alert:
+                    <span class="kw">for</span> sink <span class="kw">in</span> <span class="pr">self</span>._sinks:
+                        <span class="kw">await</span> sink.send(alert)
+
+
+<span class="cm"># ─── Wire it up ───────────────────────────────────────────────────</span>
+engine = <span class="cl">VektorEngine</span>(
+    source=<span class="cl">BinanceWebsocketFeed</span>(<span class="st">"BTCUSDT"</span>),
+    detectors=[
+        <span class="cl">AlertingSpoofer</span>(<span class="st">"BTCUSDT"</span>),
+        <span class="cl">LayeringDetector</span>(<span class="st">"BTCUSDT"</span>),
+    ],
+    sinks=[
+        <span class="cl">DiscordSink</span>(webhook_url=<span class="st">"..."</span>),
+        <span class="cl">SQLiteSink</span>(db_path=<span class="st">"alerts.db"</span>),
+    ]
+)
+
+<span class="cm"># In tests: swap BinanceFeed for MockFeed, DiscordSink for CaptureSink</span>
+<span class="cm"># Zero code changes to VektorEngine itself.</span></pre>
+    </div>
+
+    <div class="info-box">
+      <strong>This is the endgame pattern.</strong> <code>VektorEngine</code> has no knowledge of Binance, Discord, spoofing, or SQLite. It only knows three protocols: source, detectors, sinks. This makes it trivially testable and infinitely extensible — add a new exchange feed or new alert channel by writing a new class, not modifying existing ones. That's the Open/Closed Principle.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = ['encapsulation','inheritance','polymorphism','protocols','descriptors','metaclasses','composition'].indexOf(id);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
