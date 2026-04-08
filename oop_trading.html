@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced OOP — Vektor Labs Edition</title>
+<title>Advanced OOP — market-microstructure Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -587,7 +587,7 @@
   <header>
     <div class="header-tag">// advanced python oop</div>
     <h1>Object-Oriented Design<br><span>for Trading Systems</span></h1>
-    <p class="subtitle">$ vektor-labs :: market-microstructure :: production-grade patterns</p>
+    <p class="subtitle">$ market-microstructure :: production-grade patterns</p>
   </header>
 
   <nav>
@@ -803,7 +803,6 @@ o.side = <span class="st">"BOTH"</span>  <span class="cm"># 💀 invalid state</
     <div class="section-label">class hierarchy diagram</div>
 
     <div class="diagram-card">
-      <div class="diagram-title">// vektor · detector hierarchy</div>
 
       <div class="class-box class-abstract">
         <div class="class-name">«abstract» BaseDetector</div>
@@ -1393,7 +1392,7 @@ detectors = [
         <span class="nb">super</span>().__init__(name, bases, namespace)
         <span class="cm"># Auto-inject a class-level logger</span>
         <span class="kw">import</span> logging
-        cls.logger = logging.getLogger(<span class="st">f"vektor.{name}"</span>)
+        cls.logger = logging.getLogger(<span class="st">f"haider.{name}"</span>)
 
 
 <span class="kw">class</span> <span class="cl">BaseDetector</span>(metaclass=<span class="cl">DetectorMeta</span>):
@@ -1436,7 +1435,7 @@ detectors = [
       <div class="code-header">
         <div class="code-header-left">
           <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
-          <span class="code-filename">vektor_core.py  —  full composition example</span>
+          <span class="code-filename">detection_core.py  —  full composition example</span>
         </div>
       </div>
       <pre><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
@@ -1480,7 +1479,7 @@ detectors = [
 
 
 <span class="cm"># ─── Engine: composed of injected dependencies ────────────────────</span>
-<span class="kw">class</span> <span class="cl">VektorEngine</span>:
+<span class="kw">class</span> <span class="cl">DetectionEngine</span>:
     <span class="st">"""
     Doesn't inherit from anything business-logic-y.
     Composed of: source, detectors[], sinks[].
@@ -1506,7 +1505,7 @@ detectors = [
 
 
 <span class="cm"># ─── Wire it up ───────────────────────────────────────────────────</span>
-engine = <span class="cl">VektorEngine</span>(
+engine = <span class="cl">DetectionEngine</span>(
     source=<span class="cl">BinanceWebsocketFeed</span>(<span class="st">"BTCUSDT"</span>),
     detectors=[
         <span class="cl">AlertingSpoofer</span>(<span class="st">"BTCUSDT"</span>),
@@ -1519,11 +1518,11 @@ engine = <span class="cl">VektorEngine</span>(
 )
 
 <span class="cm"># In tests: swap BinanceFeed for MockFeed, DiscordSink for CaptureSink</span>
-<span class="cm"># Zero code changes to VektorEngine itself.</span></pre>
+<span class="cm"># Zero code changes to DetectionEngine itself.</span></pre>
     </div>
 
     <div class="info-box">
-      <strong>This is the endgame pattern.</strong> <code>VektorEngine</code> has no knowledge of Binance, Discord, spoofing, or SQLite. It only knows three protocols: source, detectors, sinks. This makes it trivially testable and infinitely extensible — add a new exchange feed or new alert channel by writing a new class, not modifying existing ones. That's the Open/Closed Principle.
+      <strong>This is the endgame pattern.</strong> <code>DetectionEngine</code> has no knowledge of Binance, Discord, spoofing, or SQLite. It only knows three protocols: source, detectors, sinks. This makes it trivially testable and infinitely extensible — add a new exchange feed or new alert channel by writing a new class, not modifying existing ones. That's the Open/Closed Principle.
     </div>
 
   </div>
